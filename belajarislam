@@ -1,149 +1,300 @@
-:root {
-  color-scheme: light;
-  --primary: #0f766e;
-  --primary-dark: #115e59;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --ok: #166534;
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  getDoc,
+} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: 'YOUR_FIREBASE_API_KEY',
+  authDomain: 'YOUR_FIREBASE_AUTH_DOMAIN',
+  projectId: 'YOUR_FIREBASE_PROJECT_ID',
+  storageBucket: 'YOUR_FIREBASE_STORAGE_BUCKET',
+  messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID',
+  appId: 'YOUR_FIREBASE_APP_ID',
+};
+
+const defaultCourses = [
+  {
+    id: 'arabic-1',
+    category: 'Bahasa Arab',
+    title: 'Dasar Nahwu untuk Pemula',
+    description: 'Mengenal struktur kalimat dasar dan kaidah nahwu awal.',
+    youtubeUrl: 'https://www.youtube.com/embed/4dTr7Vx9u6Q',
+  },
+  {
+    id: 'fiqih-1',
+    category: 'Fikih',
+    title: 'Fikih Ibadah: Thaharah dan Shalat',
+    description: 'Materi fikih ibadah dasar yang wajib dipahami muslim.',
+    youtubeUrl: 'https://www.youtube.com/embed/cSLM2Q8x3f8',
+  },
+  {
+    id: 'ushul-fiqih-1',
+    category: 'Ushul Fikih',
+    title: 'Pengantar Ushul Fikih',
+    description: 'Memahami sumber hukum Islam dan metode istinbath.',
+    youtubeUrl: 'https://www.youtube.com/embed/S7I6lyzPUbo',
+  },
+];
+
+const authSection = document.getElementById('auth-section');
+const dashboard = document.getElementById('dashboard');
+const authMessage = document.getElementById('auth-message');
+const welcomeEl = document.getElementById('welcome');
+const form = document.getElementById('auth-form');
+const registerBtn = document.getElementById('register-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const courseList = document.getElementById('course-list');
+const template = document.getElementById('course-template');
+
+const isFirebaseConfigured = !Object.values(firebaseConfig).some((value) =>
+  String(value).startsWith('YOUR_FIREBASE_'),
+);
+
+let auth = null;
+let db = null;
+let mode = 'demo';
+
+if (isFirebaseConfigured) {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  mode = 'firebase';
 }
 
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+const demoDb = {
+  users: JSON.parse(localStorage.getItem('demoUsers') || '{}'),
+  progress: JSON.parse(localStorage.getItem('demoProgress') || '{}'),
+  currentUser: JSON.parse(localStorage.getItem('demoCurrentUser') || 'null'),
+};
+
+function persistDemoData() {
+  localStorage.setItem('demoUsers', JSON.stringify(demoDb.users));
+  localStorage.setItem('demoProgress', JSON.stringify(demoDb.progress));
+  localStorage.setItem('demoCurrentUser', JSON.stringify(demoDb.currentUser));
 }
 
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
+function usernameToEmail(username) {
+  return `${username.toLowerCase().trim()}@lms-islam.local`;
 }
 
-.hero {
-  background: linear-gradient(130deg, var(--primary), #0ea5e9);
-  color: white;
-  padding: 2.2rem 1rem;
-  text-align: center;
+function showMessage(msg, isError = false) {
+  authMessage.textContent = msg;
+  authMessage.style.color = isError ? '#b91c1c' : '#166534';
 }
 
-.container {
-  width: min(1000px, 92vw);
-  margin: 1.5rem auto 2.5rem;
-  display: grid;
-  gap: 1rem;
+async function ensureDefaultCourses() {
+  if (mode === 'demo') return;
+
+  const snapshot = await getDocs(collection(db, 'courses'));
+  if (!snapshot.empty) {
+    return;
+  }
+  await Promise.all(defaultCourses.map((course) => setDoc(doc(db, 'courses', course.id), course)));
 }
 
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 6px 28px rgba(15, 23, 42, 0.08);
+async function fetchCoursesWithProgress(uid) {
+  if (mode === 'demo') {
+    return defaultCourses.map((course) => ({
+      ...course,
+      done: Boolean(demoDb.progress?.[uid]?.[course.id]),
+    }));
+  }
+
+  const coursesSnapshot = await getDocs(collection(db, 'courses'));
+  const courses = coursesSnapshot.docs.map((item) => item.data());
+  const withProgress = await Promise.all(
+    courses.map(async (course) => {
+      const progressRef = doc(db, 'users', uid, 'progress', course.id);
+      const progressSnap = await getDoc(progressRef);
+      return {
+        ...course,
+        done: progressSnap.exists() ? Boolean(progressSnap.data().done) : false,
+      };
+    }),
+  );
+  return withProgress;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.9rem;
+async function markCourseDone(uid, courseId) {
+  if (mode === 'demo') {
+    demoDb.progress[uid] = demoDb.progress[uid] || {};
+    demoDb.progress[uid][courseId] = true;
+    persistDemoData();
+    return;
+  }
+
+  await setDoc(
+    doc(db, 'users', uid, 'progress', courseId),
+    {
+      done: true,
+      updatedAt: new Date().toISOString(),
+    },
+    { merge: true },
+  );
 }
 
-label {
-  display: grid;
-  gap: 0.4rem;
-  font-weight: 600;
+function renderCourses(courses, uid) {
+  courseList.innerHTML = '';
+
+  courses.forEach((course) => {
+    const clone = template.content.cloneNode(true);
+    const root = clone.querySelector('.course-item');
+
+    clone.querySelector('.course-title').textContent = course.title;
+    clone.querySelector('.course-description').textContent = course.description;
+    clone.querySelector('.badge').textContent = course.category;
+    clone.querySelector('.course-video').src = course.youtubeUrl;
+
+    const completeBtn = clone.querySelector('.complete-btn');
+    if (course.done) {
+      root.classList.add('done');
+      completeBtn.textContent = 'Sudah Selesai';
+    }
+
+    completeBtn.addEventListener('click', async () => {
+      await markCourseDone(uid, course.id);
+      root.classList.add('done');
+      completeBtn.textContent = 'Sudah Selesai';
+    });
+
+    courseList.append(clone);
+  });
 }
 
-input {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  padding: 0.6rem 0.75rem;
+async function register(username, password) {
+  if (mode === 'demo') {
+    const key = username.toLowerCase().trim();
+    if (demoDb.users[key]) throw new Error('Username sudah terdaftar. Silakan masuk.');
+    demoDb.users[key] = { username, password, uid: `demo-${key}` };
+    demoDb.currentUser = { uid: `demo-${key}`, displayName: username };
+    persistDemoData();
+    return;
+  }
+
+  const email = usernameToEmail(username);
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  await updateProfile(userCredential.user, { displayName: username });
+  await setDoc(
+    doc(db, 'users', userCredential.user.uid),
+    {
+      username,
+      createdAt: new Date().toISOString(),
+    },
+    { merge: true },
+  );
 }
 
-button {
-  border: none;
-  background: var(--primary);
-  color: white;
-  border-radius: 10px;
-  padding: 0.65rem 0.95rem;
-  cursor: pointer;
-  font-weight: 600;
+async function login(username, password) {
+  if (mode === 'demo') {
+    const key = username.toLowerCase().trim();
+    const record = demoDb.users[key];
+    if (!record || record.password !== password) throw new Error('Username/password tidak cocok.');
+    demoDb.currentUser = { uid: record.uid, displayName: record.username };
+    persistDemoData();
+    notifyDemoAuthChanged();
+    return;
+  }
+
+  await signInWithEmailAndPassword(auth, usernameToEmail(username), password);
 }
 
-button:hover {
-  background: var(--primary-dark);
+async function logout() {
+  if (mode === 'demo') {
+    demoDb.currentUser = null;
+    persistDemoData();
+    notifyDemoAuthChanged();
+    return;
+  }
+
+  await signOut(auth);
 }
 
-button.secondary {
-  background: #334155;
+const demoAuthListeners = [];
+
+function notifyDemoAuthChanged() {
+  demoAuthListeners.forEach((listener) => listener(demoDb.currentUser));
 }
 
-.actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 0.9rem;
+function observeAuthState(listener) {
+  if (mode === 'demo') {
+    demoAuthListeners.push(listener);
+    listener(demoDb.currentUser);
+    return;
+  }
+
+  onAuthStateChanged(auth, listener);
 }
 
-.muted {
-  color: var(--muted);
-}
+registerBtn.addEventListener('click', async () => {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
 
-.message {
-  min-height: 1.3rem;
-  font-weight: 600;
-}
+  if (!username || !password) {
+    showMessage('Username dan password wajib diisi.', true);
+    return;
+  }
 
-.hidden {
-  display: none;
-}
+  try {
+    await register(username, password);
+    if (mode === 'demo') notifyDemoAuthChanged();
+    showMessage(
+      mode === 'demo'
+        ? 'Demo mode: pendaftaran berhasil. Anda bisa langsung coba LMS.'
+        : 'Pendaftaran berhasil. Anda sudah masuk ke LMS.',
+    );
+  } catch (error) {
+    showMessage(`Gagal daftar: ${error.message}`, true);
+  }
+});
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
 
-.course-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.9rem;
-}
+  try {
+    await login(username, password);
+    showMessage('Berhasil masuk.');
+  } catch (error) {
+    showMessage(`Gagal masuk: ${error.message}`, true);
+  }
+});
 
-.course-item {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.8rem;
-  display: grid;
-  gap: 0.6rem;
-}
+logoutBtn.addEventListener('click', async () => {
+  await logout();
+});
 
-.course-item.done {
-  border-color: #86efac;
-  box-shadow: inset 0 0 0 1px #86efac;
-}
+observeAuthState(async (user) => {
+  if (!user) {
+    authSection.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+    if (mode === 'demo') {
+      showMessage('Mode demo aktif. Isi username/password bebas untuk melihat visual LMS.', false);
+    }
+    return;
+  }
 
-.badge {
-  width: fit-content;
-  padding: 0.2rem 0.55rem;
-  background: #e2e8f0;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.course-item.done .badge {
-  background: #dcfce7;
-  color: var(--ok);
-}
-
-.video-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-}
-
-.course-video {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 10px;
-}
+  try {
+    await ensureDefaultCourses();
+    const courses = await fetchCoursesWithProgress(user.uid);
+    authSection.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    welcomeEl.textContent = `Assalamu'alaikum, ${user.displayName || 'Peserta'} 👋`;
+    renderCourses(courses, user.uid);
+  } catch (error) {
+    showMessage(`Terjadi masalah saat memuat dashboard: ${error.message}`, true);
+  }
+});
