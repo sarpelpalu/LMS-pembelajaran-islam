@@ -219,3 +219,30 @@ button.secondary:hover {
 .complete-btn:hover {
   background-color: #2563eb;
 }
+/* =========================================
+   Gaya untuk Tab Kategori Pembelajaran
+   ========================================= */
+.category-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background-color: #e5e7eb;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.tab-btn:hover {
+  background-color: #d1d5db;
+}
+
+.tab-btn.active {
+  background-color: var(--primary-color);
+  color: white;
+}
