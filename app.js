@@ -167,3 +167,28 @@ onAuthStateChanged(auth, async (user) => {
     renderCourses(allCoursesData, user.uid, "Semua");
   }
 });
+// ==========================================
+// LOGIKA NAVIGASI SIDEBAR (PINDAH HALAMAN)
+// ==========================================
+const sidebarItems = document.querySelectorAll('.nav-item');
+const pageSections = document.querySelectorAll('.page-section');
+
+sidebarItems.forEach(item => {
+  item.addEventListener('click', () => {
+    // 1. Hapus warna aktif dari semua tombol menu di sidebar
+    sidebarItems.forEach(nav => nav.classList.remove('active'));
+    
+    // 2. Tambahkan warna aktif pada menu yang baru saja diklik
+    item.classList.add('active');
+
+    // 3. Sembunyikan semua halaman konten
+    pageSections.forEach(section => section.classList.remove('active-section'));
+
+    // 4. Tampilkan halaman konten yang sesuai dengan menu yang diklik
+    const targetId = item.getAttribute('data-target');
+    const targetSection = document.getElementById(targetId);
+    if (targetSection) {
+      targetSection.classList.add('active-section');
+    }
+  });
+});
