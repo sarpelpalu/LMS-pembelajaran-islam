@@ -1,298 +1,221 @@
-:root {:root {
-  color-scheme: light;
-  --primary: #0f766e;
-  --primary-dark: #115e59;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --ok: #166534;
+/* =========================================
+   Variabel Warna & Desain Dasar
+   ========================================= */
+:root {
+  --primary-color: #059669; /* Hijau Elegan */
+  --primary-hover: #047857; /* Hijau Gelap untuk interaksi */
+  --bg-color: #f3f4f6; /* Abu-abu sangat terang untuk background */
+  --card-bg: #ffffff;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --radius: 8px; /* Lengkungan sudut */
 }
 
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-}
-
+/* Mengatur gaya dasar seluruh halaman */
 body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  padding: 0;
+  line-height: 1.6;
 }
 
+/* =========================================
+   Bagian Header (Atas)
+   ========================================= */
 .hero {
-  background: linear-gradient(130deg, var(--primary), #0ea5e9);
+  background-color: var(--primary-color);
   color: white;
-  padding: 2.2rem 1rem;
+  padding: 3rem 1rem;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.hero h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 2.5rem;
+}
+
+.hero p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+/* =========================================
+   Kerangka Konten Utama
+   ========================================= */
 .container {
-  width: min(1000px, 92vw);
-  margin: 1.5rem auto 2.5rem;
-  display: grid;
-  gap: 1rem;
+  max-width: 800px;
+  margin: -2rem auto 2rem auto; /* Ditarik sedikit ke atas menimpa hero */
+  padding: 0 1rem;
+  position: relative;
 }
 
+/* Gaya untuk setiap kotak konten (Card) */
 .card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 6px 28px rgba(15, 23, 42, 0.08);
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
 }
 
+/* Kelas pembantu */
+.hidden {
+  display: none !important; /* Menyembunyikan elemen */
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+/* =========================================
+   Formulir (Login & Register)
+   ========================================= */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 label {
-  display: grid;
-  gap: 0.4rem;
+  display: flex;
+  flex-direction: column;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
 input {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  padding: 0.6rem 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
 }
 
-button {
-  border: none;
-  background: var(--primary);
-  color: white;
-  border-radius: 10px;
-  padding: 0.65rem 0.95rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-button:hover {
-  background: var(--primary-dark);
-}
-
-button.secondary {
-  background: #334155;
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
 }
 
 .actions {
   display: flex;
-  gap: 0.6rem;
-  margin-top: 0.9rem;
-}
-
-.muted {
-  color: var(--muted);
-}
-
-.message {
-  min-height: 1.3rem;
-  font-weight: 600;
-}
-
-.hidden {
-  display: none;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.course-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.9rem;
-}
-
-.course-item {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.8rem;
-  display: grid;
-  gap: 0.6rem;
-}
-
-.course-item.done {
-  border-color: #86efac;
-  box-shadow: inset 0 0 0 1px #86efac;
-}
-
-.badge {
-  width: fit-content;
-  padding: 0.2rem 0.55rem;
-  background: #e2e8f0;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.course-item.done .badge {
-  background: #dcfce7;
-  color: var(--ok);
-}
-
-.video-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-}
-
-.course-video {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 10px;
-}
-
-  color-scheme: light;
-  --primary: #0f766e;
-  --primary-dark: #115e59;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --ok: #166534;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-}
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.hero {
-  background: linear-gradient(130deg, var(--primary), #0ea5e9);
-  color: white;
-  padding: 2.2rem 1rem;
-  text-align: center;
-}
-
-.container {
-  width: min(1000px, 92vw);
-  margin: 1.5rem auto 2.5rem;
-  display: grid;
   gap: 1rem;
+  justify-content: flex-end; /* Tombol ke kanan */
 }
 
-.card {
-  background: var(--card);
-  border-radius: 14px;
-  padding: 1rem 1.2rem;
-  box-shadow: 0 6px 28px rgba(15, 23, 42, 0.08);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.9rem;
-}
-
-label {
-  display: grid;
-  gap: 0.4rem;
-  font-weight: 600;
-}
-
-input {
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
-  padding: 0.6rem 0.75rem;
-}
-
+/* Gaya Tombol Umum */
 button {
-  border: none;
-  background: var(--primary);
+  background-color: var(--primary-color);
   color: white;
-  border-radius: 10px;
-  padding: 0.65rem 0.95rem;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
   cursor: pointer;
   font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background: var(--primary-dark);
+  background-color: var(--primary-hover);
 }
 
+/* Tombol Keluar (Merah) */
 button.secondary {
-  background: #334155;
+  background-color: #ef4444;
 }
 
-.actions {
-  display: flex;
-  gap: 0.6rem;
-  margin-top: 0.9rem;
+button.secondary:hover {
+  background-color: #dc2626;
 }
 
-.muted {
-  color: var(--muted);
-}
-
+/* Pesan error/sukses di bawah form */
 .message {
-  min-height: 1.3rem;
-  font-weight: 600;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: 500;
 }
 
-.hidden {
-  display: none;
-}
-
+/* =========================================
+   Dashboard & Daftar Materi
+   ========================================= */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 2rem;
+}
+
+.topbar h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-color);
 }
 
 .course-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .course-item {
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 0.8rem;
-  display: grid;
-  gap: 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  background-color: #fafafa;
 }
 
-.course-item.done {
-  border-color: #86efac;
-  box-shadow: inset 0 0 0 1px #86efac;
+.course-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--text-main);
 }
 
-.badge {
-  width: fit-content;
-  padding: 0.2rem 0.55rem;
-  background: #e2e8f0;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 700;
+.course-description {
+  margin: 0 0 1rem 0;
+  color: var(--text-muted);
 }
 
-.course-item.done .badge {
-  background: #dcfce7;
-  color: var(--ok);
-}
-
+/* =========================================
+   Video YouTube Responsif
+   ========================================= */
 .video-wrap {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
+  padding-bottom: 56.25%; /* Rasio aspek 16:9 untuk YouTube */
+  height: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.course-video {
+.video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   border: 0;
-  border-radius: 10px;
+}
+
+/* Tombol Selesai Pembelajaran */
+.complete-btn {
+  width: 100%;
+  background-color: #3b82f6; /* Biru */
+}
+
+.complete-btn:hover {
+  background-color: #2563eb;
 }
