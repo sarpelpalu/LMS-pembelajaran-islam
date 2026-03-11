@@ -23,10 +23,48 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Data Materi Pembelajaran Default
+// Data Materi Pembelajaran (Silakan tambah sebanyak apapun di sini)
 const defaultCourses = [
-  { id: 'arabic-1', category: 'Bahasa Arab', title: 'Dasar Nahwu', description: 'Mengenal struktur kalimat dasar.', youtubeUrl: 'https://www.youtube.com/embed/4dTr7Vx9u6Q' },
-  { id: 'fiqih-1', category: 'Fikih', title: 'Thaharah dan Shalat', description: 'Materi fikih ibadah dasar.', youtubeUrl: 'https://www.youtube.com/embed/cSLM2Q8x3f8' },
-  { id: 'ushul-fiqih-1', category: 'Ushul Fikih', title: 'Pengantar Ushul Fikih', description: 'Sumber hukum Islam.', youtubeUrl: 'https://www.youtube.com/embed/S7I6lyzPUbo' },
+  // --- KATEGORI BAHASA ARAB ---
+  { 
+    id: 'arabic-1', 
+    category: 'Bahasa Arab', 
+    title: 'Pelajaran 1: Dasar Nahwu', 
+    description: 'Mengenal struktur kalimat dasar.', 
+    youtubeUrl: 'https://www.youtube.com/embed/nmu6o9c_2iA' // Ganti dengan link embed videomu
+  },
+  { 
+    id: 'arabic-2', 
+    category: 'Bahasa Arab', 
+    title: 'Pelajaran 2: Isim, Fiil, Huruf', 
+    description: 'Mengenal pembagian kata dalam bahasa arab.', 
+    youtubeUrl: 'https://www.youtube.com/embed/nmu6o9c_2iA' 
+  },
+
+  // --- KATEGORI FIKIH ---
+  { 
+    id: 'fiqih-1', 
+    category: 'Fikih', 
+    title: 'Fikih 1: Thaharah (Bersuci)', 
+    description: 'Tata cara wudhu dan mandi wajib.', 
+    youtubeUrl: 'https://www.youtube.com/embed/nmu6o9c_2iA' 
+  },
+  { 
+    id: 'fiqih-2', 
+    category: 'Fikih', 
+    title: 'Fikih 2: Rukun Shalat', 
+    description: 'Memahami rukun dan syarat sah shalat.', 
+    youtubeUrl: 'https://www.youtube.com/embed/nmu6o9c_2iA' 
+  },
+
+  // --- KATEGORI USHUL FIKIH ---
+  { 
+    id: 'ushul-1', 
+    category: 'Ushul Fikih', 
+    title: 'Pengantar Ushul Fikih', 
+    description: 'Memahami sejarah dan sumber hukum Islam.', 
+    youtubeUrl: 'https://www.youtube.com/embed/nmu6o9c_2iA' 
+  }
 ];
 
 // Hubungkan elemen HTML ke JS
