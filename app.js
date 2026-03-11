@@ -6,12 +6,14 @@ import { getFirestore, collection, getDocs, setDoc, doc, getDoc } from 'https://
 // === 2. KONFIGURASI FIREBASE ===
 // 👇 TEMPELKAN KODE FIREBASE MILIKMU DI SINI 👇
 const firebaseConfig = {
-  apiKey: "KODE_MILIKMU_DISINI",
-  authDomain: "KODE_MILIKMU_DISINI",
-  projectId: "KODE_MILIKMU_DISINI",
-  storageBucket: "KODE_MILIKMU_DISINI",
-  messagingSenderId: "KODE_MILIKMU_DISINI",
-  appId: "KODE_MILIKMU_DISINI"
+  apiKey: "AIzaSyBKgoWQfbyIgA8BLa67MdD0eXbzTsvC-bM",
+  authDomain: "pembelajaran-islam.firebaseapp.com",
+  databaseURL: "https://pembelajaran-islam-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "pembelajaran-islam",
+  storageBucket: "pembelajaran-islam.firebasestorage.app",
+  messagingSenderId: "571685080002",
+  appId: "1:571685080002:web:3a22b6a7af911fef5a245b",
+  measurementId: "G-0KVTX61PC3"
 };
 // 👆 -------------------------------------- 👆
 
