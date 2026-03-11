@@ -4,7 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LMS Pembelajaran Islami</title>
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* --- DESAIN ELEGAN LMS --- */
+      :root { --primary-color: #059669; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border-color: #e5e7eb; --radius: 8px; }
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.6; }
+      .hero { background-color: var(--primary-color); color: white; padding: 3rem 1rem; text-align: center; }
+      .hero h1 { margin: 0 0 0.5rem 0; font-size: 2.5rem; }
+      .container { max-width: 800px; margin: -2rem auto 2rem auto; padding: 0 1rem; position: relative; }
+      .card { background-color: var(--card-bg); padding: 2rem; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+      .hidden { display: none !important; }
+      .muted { color: var(--text-muted); font-size: 0.95rem; margin-top: 0; }
+      .grid { display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0; }
+      input { padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; }
+      button { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: var(--radius); cursor: pointer; font-weight: bold; }
+      button.secondary { background-color: #ef4444; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; }
+      .topbar h2 { margin: 0; color: var(--primary-color); }
+      .course-list { display: flex; flex-direction: column; gap: 1.5rem; }
+      .course-item { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1.5rem; background-color: #fafafa; }
+      .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+      .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+      .complete-btn { width: 100%; background-color: #3b82f6; }
+      /* Gaya Tab Kategori */
+      .category-tabs { display: flex; gap: 10px; margin: 15px 0 20px 0; flex-wrap: wrap; }
+      .tab-btn { background-color: #e5e7eb; color: #374151; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; }
+      .tab-btn.active { background-color: var(--primary-color); color: white; }
+    </style>
   </head>
   <body>
     <header class="hero">
@@ -15,24 +40,15 @@
     <main class="container">
       <section id="auth-section" class="card">
         <h2>Masuk / Daftar</h2>
-        <p class="muted">Gunakan username dan password untuk mengakses LMS.</p>
         <form id="auth-form">
           <div class="grid">
-            <label>
-              Username
-              <input type="text" id="username" minlength="3" required placeholder="Contoh: fulan" />
-            </label>
-            <label>
-              Password
-              <input type="password" id="password" minlength="6" required placeholder="Minimal 6 karakter" />
-            </label>
+            <input type="text" id="username" placeholder="Username" required />
+            <input type="password" id="password" placeholder="Password (min 6 karakter)" required />
           </div>
-          <div class="actions">
-            <button type="button" id="register-btn">Daftar</button>
-            <button type="submit" id="login-btn">Masuk</button>
-          </div>
+          <button type="button" id="register-btn">Daftar</button>
+          <button type="submit" id="login-btn">Masuk</button>
         </form>
-        <p id="auth-message" class="message"></p>
+        <p id="auth-message" style="margin-top: 10px; font-weight: bold;"></p>
       </section>
 
       <section id="dashboard" class="hidden">
@@ -43,7 +59,7 @@
 
         <section class="card">
           <h3>Materi Pembelajaran</h3>
-          <p class="muted">Pilih kategori di bawah ini untuk melihat materi spesifik.</p>
+          <p class="muted">Pilih kategori di bawah ini untuk memfilter materi.</p>
           
           <div class="category-tabs" id="category-tabs">
             <button class="tab-btn active" data-category="Semua">Semua Materi</button>
@@ -59,11 +75,10 @@
 
     <template id="course-template">
       <article class="course-item">
-        <h4 class="course-title"></h4>
-        <p class="course-description"></p>
-        <div class="badge"></div>
+        <h4 class="course-title" style="margin:0 0 5px 0; font-size:1.2rem;"></h4>
+        <p class="course-description" style="margin:0 0 15px 0;"></p>
         <div class="video-wrap">
-          <iframe class="course-video" title="YouTube player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe class="course-video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         <button class="complete-btn">Tandai Selesai</button>
       </article>
