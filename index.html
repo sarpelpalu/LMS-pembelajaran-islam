@@ -20,11 +20,11 @@
           <div class="grid">
             <label>
               Username
-              <input type="text" id="username" minlength="3" required />
+              <input type="text" id="username" minlength="3" required placeholder="Contoh: fulan" />
             </label>
             <label>
               Password
-              <input type="password" id="password" minlength="6" required />
+              <input type="password" id="password" minlength="6" required placeholder="Minimal 6 karakter" />
             </label>
           </div>
           <div class="actions">
@@ -42,8 +42,16 @@
         </div>
 
         <section class="card">
-          <h3>Kategori Pembelajaran</h3>
-          <p class="muted">Pilih materi, lalu tonton videonya. Progress Anda tersimpan di Firebase.</p>
+          <h3>Materi Pembelajaran</h3>
+          <p class="muted">Pilih kategori di bawah ini untuk melihat materi spesifik.</p>
+          
+          <div class="category-tabs" id="category-tabs">
+            <button class="tab-btn active" data-category="Semua">Semua Materi</button>
+            <button class="tab-btn" data-category="Bahasa Arab">Bahasa Arab</button>
+            <button class="tab-btn" data-category="Fikih">Fikih</button>
+            <button class="tab-btn" data-category="Ushul Fikih">Ushul Fikih</button>
+          </div>
+
           <div id="course-list" class="course-list"></div>
         </section>
       </section>
@@ -55,12 +63,7 @@
         <p class="course-description"></p>
         <div class="badge"></div>
         <div class="video-wrap">
-          <iframe
-            class="course-video"
-            title="YouTube player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-          ></iframe>
+          <iframe class="course-video" title="YouTube player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
         <button class="complete-btn">Tandai Selesai</button>
       </article>
