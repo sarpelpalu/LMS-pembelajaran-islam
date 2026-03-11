@@ -1,20 +1,26 @@
+// === 1. IMPORT FIREBASE ===
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getFirestore, collection, getDocs, setDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
-// KONFIGURASI FIREBASE (Ganti dengan milikmu nanti jika ingin database sungguhan)
+// === 2. KONFIGURASI FIREBASE ===
+// 👇 TEMPELKAN KODE FIREBASE MILIKMU DI SINI 👇
 const firebaseConfig = {
-  apiKey: "AIzaSyBKgoWQfbyIgA8BLa67MdD0eXbzTsvC-bM",
-  authDomain: "pembelajaran-islam.firebaseapp.com",
-  databaseURL: "https://pembelajaran-islam-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "pembelajaran-islam",
-  storageBucket: "pembelajaran-islam.firebasestorage.app",
-  messagingSenderId: "571685080002",
-  appId: "1:571685080002:web:3a22b6a7af911fef5a245b",
-  measurementId: "G-0KVTX61PC3"
+  apiKey: "KODE_MILIKMU_DISINI",
+  authDomain: "KODE_MILIKMU_DISINI",
+  projectId: "KODE_MILIKMU_DISINI",
+  storageBucket: "KODE_MILIKMU_DISINI",
+  messagingSenderId: "KODE_MILIKMU_DISINI",
+  appId: "KODE_MILIKMU_DISINI"
 };
+// 👆 -------------------------------------- 👆
 
-// Data Materi Pembelajaran
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Data Materi Pembelajaran Default
 const defaultCourses = [
   { id: 'arabic-1', category: 'Bahasa Arab', title: 'Dasar Nahwu', description: 'Mengenal struktur kalimat dasar.', youtubeUrl: 'https://www.youtube.com/embed/4dTr7Vx9u6Q' },
   { id: 'fiqih-1', category: 'Fikih', title: 'Thaharah dan Shalat', description: 'Materi fikih ibadah dasar.', youtubeUrl: 'https://www.youtube.com/embed/cSLM2Q8x3f8' },
@@ -36,43 +42,21 @@ const tabBtns = document.querySelectorAll('.tab-btn');
 let currentUserData = null;
 let allCoursesData = [];
 
-// Deteksi Mode: Demo atau Firebase Asli
-const isFirebaseConfigured = !Object.values(firebaseConfig).some(value => String(value).startsWith('YOUR_FIREBASE_'));
-let auth = null, db = null, mode = 'demo';
-
-if (isFirebaseConfigured) {
-  const app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-  mode = 'firebase';
-}
-
-// Sistem Database Demo (Penyimpanan Sementara di Browser)
-const demoDb = {
-  users: JSON.parse(localStorage.getItem('demoUsers') || '{}'),
-  progress: JSON.parse(localStorage.getItem('demoProgress') || '{}'),
-  currentUser: JSON.parse(localStorage.getItem('demoCurrentUser') || 'null'),
-};
-
-function persistDemoData() {
-  localStorage.setItem('demoUsers', JSON.stringify(demoDb.users));
-  localStorage.setItem('demoProgress', JSON.stringify(demoDb.progress));
-  localStorage.setItem('demoCurrentUser', JSON.stringify(demoDb.currentUser));
-}
-
+// Fungsi untuk menampilkan pesan sukses/error
 function showMessage(msg, isError = false) {
   authMessage.textContent = msg;
   authMessage.style.color = isError ? '#ef4444' : '#059669'; // Merah error, Hijau sukses
 }
 
-// FUNGSI RENDER MATERI (Berdasarkan Kategori)
-function renderCourses(courses, uid, filterCategory = "Semua") {
-  courseList.innerHTML = ''; // Kosongkan daftar sebelumnya
+// Fungsi mengubah username jadi email palsu (karena Firebase wajib pakai email)
+function usernameToEmail(username) {
+  return `${username.toLowerCase().trim()}@lms-islam.local`;
+}
 
-  // Saring materi berdasarkan kategori yang dipilih
-  const filteredCourses = filterCategory === "Semua" 
-    ? courses 
-    : courses.filter(course => course.category === filterCategory);
+// FUNGSI RENDER MATERI & TAB
+function renderCourses(courses, uid, filterCategory = "Semua") {
+  courseList.innerHTML = ''; 
+  const filteredCourses = filterCategory === "Semua" ? courses : courses.filter(course => course.category === filterCategory);
 
   if (filteredCourses.length === 0) {
     courseList.innerHTML = '<p class="muted">Belum ada materi di kategori ini.</p>';
@@ -93,13 +77,17 @@ function renderCourses(courses, uid, filterCategory = "Semua") {
       completeBtn.style.backgroundColor = '#059669';
     }
 
-    completeBtn.addEventListener('click', () => {
-      completeBtn.textContent = 'Sudah Selesai ✅';
-      completeBtn.style.backgroundColor = '#059669';
-      if(mode === 'demo') {
-        demoDb.progress[uid] = demoDb.progress[uid] || {};
-        demoDb.progress[uid][course.id] = true;
-        persistDemoData();
+    // Tombol simpan progress ke database
+    completeBtn.addEventListener('click', async () => {
+      completeBtn.textContent = 'Menyimpan...';
+      try {
+        await setDoc(doc(db, 'users', uid, 'progress', course.id), { done: true, updatedAt: new Date().toISOString() }, { merge: true });
+        completeBtn.textContent = 'Sudah Selesai ✅';
+        completeBtn.style.backgroundColor = '#059669';
+        course.done = true;
+      } catch (e) {
+        alert('Gagal menyimpan progress: ' + e.message);
+        completeBtn.textContent = 'Tandai Selesai';
       }
     });
 
@@ -107,15 +95,11 @@ function renderCourses(courses, uid, filterCategory = "Semua") {
   });
 }
 
-// LOGIKA TAB KATEGORI
+// Logika Tab Navigasi Kategori
 tabBtns.forEach(btn => {
   btn.addEventListener('click', (e) => {
-    // Hilangkan warna aktif dari semua tombol
     tabBtns.forEach(b => b.classList.remove('active'));
-    // Beri warna aktif pada tombol yang diklik
     e.target.classList.add('active');
-    
-    // Render ulang materi sesuai kategori
     const selectedCategory = e.target.getAttribute('data-category');
     renderCourses(allCoursesData, currentUserData.uid, selectedCategory);
   });
@@ -125,21 +109,18 @@ tabBtns.forEach(btn => {
 registerBtn.addEventListener('click', async () => {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
+  if (!username || !password) return showMessage('Username dan password wajib diisi.', true);
 
-  if (!username || !password) {
-    showMessage('Username dan password wajib diisi.', true);
-    return;
+  try {
+    showMessage('Sedang mendaftarkan...');
+    const email = usernameToEmail(username);
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCred.user, { displayName: username });
+    await setDoc(doc(db, 'users', userCred.user.uid), { username, createdAt: new Date().toISOString() }, { merge: true });
+    showMessage('Pendaftaran berhasil! Mengalihkan...');
+  } catch (error) {
+    showMessage(`Gagal daftar: ${error.message}`, true);
   }
-
-  if (mode === 'demo') {
-    const key = username.toLowerCase();
-    demoDb.users[key] = { username, password, uid: `demo-${key}` };
-    demoDb.currentUser = { uid: `demo-${key}`, displayName: username };
-    persistDemoData();
-    checkAuth(); // Langsung masuk
-    return;
-  }
-  // Logika Firebase asli akan berjalan di sini jika config diubah
 });
 
 // FUNGSI MASUK (LOGIN)
@@ -147,55 +128,41 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
-
-  if (mode === 'demo') {
-    const key = username.toLowerCase();
-    const record = demoDb.users[key];
-    if (!record || record.password !== password) {
-      showMessage('Username/password salah!', true);
-      return;
-    }
-    demoDb.currentUser = { uid: record.uid, displayName: record.username };
-    persistDemoData();
-    checkAuth();
-    return;
+  
+  try {
+    showMessage('Mencoba masuk...');
+    await signInWithEmailAndPassword(auth, usernameToEmail(username), password);
+  } catch (error) {
+    showMessage(`Gagal masuk: Periksa kembali username/password.`, true);
   }
 });
 
 // FUNGSI KELUAR (LOGOUT)
 logoutBtn.addEventListener('click', () => {
-  if (mode === 'demo') {
-    demoDb.currentUser = null;
-    persistDemoData();
-    checkAuth();
-  }
+  signOut(auth);
 });
 
-// CEK STATUS LOGIN
-function checkAuth() {
-  if (mode === 'demo') {
-    const user = demoDb.currentUser;
-    if (!user) {
-      authSection.classList.remove('hidden');
-      dashboard.classList.add('hidden');
-      showMessage('Silakan masuk atau daftar (Mode Demo Aktif).', false);
-    } else {
-      authSection.classList.add('hidden');
-      dashboard.classList.remove('hidden');
-      welcomeEl.textContent = `Assalamu'alaikum, ${user.displayName} 👋`;
-      
-      currentUserData = user;
-      // Beri status 'done' jika ada di progress
-      allCoursesData = defaultCourses.map(course => ({
-        ...course,
-        done: Boolean(demoDb.progress?.[user.uid]?.[course.id])
-      }));
-      
-      // Render semua materi secara default saat pertama masuk
-      renderCourses(allCoursesData, user.uid, "Semua");
-    }
-  }
-}
+// PANTAU STATUS LOGIN & AMBIL DATA (OTOMATIS)
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    // Jika belum login
+    authSection.classList.remove('hidden');
+    dashboard.classList.add('hidden');
+    showMessage('');
+    currentUserData = null;
+  } else {
+    // Jika sudah login
+    authSection.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    welcomeEl.textContent = `Assalamu'alaikum, ${user.displayName || 'Peserta'} 👋`;
+    currentUserData = user;
 
-// Jalankan pengecekan saat halaman dimuat
-checkAuth();
+    // Ambil data progress dari Firestore
+    allCoursesData = await Promise.all(defaultCourses.map(async (course) => {
+      const snap = await getDoc(doc(db, 'users', user.uid, 'progress', course.id));
+      return { ...course, done: snap.exists() ? snap.data().done : false };
+    }));
+
+    renderCourses(allCoursesData, user.uid, "Semua");
+  }
+});
