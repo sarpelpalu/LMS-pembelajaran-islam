@@ -23,14 +23,14 @@ index 0000000000000000000000000000000000000000..c1c595971444bfeb439118ce724247e1
 +  getDoc,
 +} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 +
-+const firebaseConfig = {
-+  apiKey: 'YOUR_FIREBASE_API_KEY',
-+  authDomain: 'YOUR_FIREBASE_AUTH_DOMAIN',
-+  projectId: 'YOUR_FIREBASE_PROJECT_ID',
-+  storageBucket: 'YOUR_FIREBASE_STORAGE_BUCKET',
-+  messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID',
-+  appId: 'YOUR_FIREBASE_APP_ID',
-+};
+const firebaseConfig = {
+  apiKey: "AIzaSyB-contoh-kode-rahasia-milikmu",
+  authDomain: "lms-app-kamu.firebaseapp.com",
+  projectId: "lms-app-kamu",
+  storageBucket: "lms-app-kamu.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcde12345"
+};
 +
 +const defaultCourses = [
 +  {
