@@ -1,89 +1,162 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LMS Pembelajaran Islami</title>
-    <style>
-      /* --- DESAIN ELEGAN LMS --- */
-      :root { --primary-color: #059669; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border-color: #e5e7eb; --radius: 8px; }
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; line-height: 1.6; }
-      .hero { background-color: var(--primary-color); color: white; padding: 3rem 1rem; text-align: center; }
-      .hero h1 { margin: 0 0 0.5rem 0; font-size: 2.5rem; }
-      .container { max-width: 800px; margin: -2rem auto 2rem auto; padding: 0 1rem; position: relative; }
-      .card { background-color: var(--card-bg); padding: 2rem; border-radius: var(--radius); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-      .hidden { display: none !important; }
-      .muted { color: var(--text-muted); font-size: 0.95rem; margin-top: 0; }
-      .grid { display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0; }
-      input { padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; }
-      button { background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: var(--radius); cursor: pointer; font-weight: bold; }
-      button.secondary { background-color: #ef4444; }
-      .topbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; }
-      .topbar h2 { margin: 0; color: var(--primary-color); }
-      .course-list { display: flex; flex-direction: column; gap: 1.5rem; }
-      .course-item { border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1.5rem; background-color: #fafafa; }
-      .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
-      .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-      .complete-btn { width: 100%; background-color: #3b82f6; }
-      /* Gaya Tab Kategori */
-      .category-tabs { display: flex; gap: 10px; margin: 15px 0 20px 0; flex-wrap: wrap; }
-      .tab-btn { background-color: #e5e7eb; color: #374151; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; }
-      .tab-btn.active { background-color: var(--primary-color); color: white; }
-    </style>
-  </head>
-  <body>
-    <header class="hero">
-      <h1>LMS Pembelajaran Islami</h1>
-      <p>Belajar Bahasa Arab, Fikih, dan Ushul Fikih secara mandiri (self paced).</p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Akademi Pembelajaran Islami</title>
+  <style>
+    /* --- RESET & FONT --- */
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background-color: #f8f9fa; color: #333; }
+    .hidden { display: none !important; }
 
-    <main class="container">
-      <section id="auth-section" class="card">
-        <h2>Masuk / Daftar</h2>
-        <form id="auth-form">
-          <div class="grid">
-            <input type="text" id="username" placeholder="Username" required />
-            <input type="password" id="password" placeholder="Password (min 6 karakter)" required />
+    /* --- HALAMAN LOGIN --- */
+    #auth-section { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+    .auth-title { text-align: center; margin-bottom: 20px; color: #8b5cf6; }
+    .input-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+    .input-group input { padding: 12px 15px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; }
+    .btn-auth { width: 100%; padding: 12px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; margin-bottom: 10px; }
+    .btn-auth.outline { background: white; color: #8b5cf6; border: 1px solid #8b5cf6; }
+
+    /* --- DASHBOARD LAYOUT --- */
+    #dashboard { display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR KIRI */
+    .sidebar { width: 260px; background: white; border-right: 1px solid #eee; display: flex; flex-direction: column; }
+    .brand { padding: 25px 20px; font-size: 1.2rem; font-weight: bold; color: #333; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f1f5f9; }
+    .brand-icon { width: 30px; height: 30px; background: #8b5cf6; border-radius: 8px; }
+    .nav-menu { list-style: none; padding: 20px 15px; margin: 0; display: flex; flex-direction: column; gap: 5px; }
+    .nav-item { padding: 12px 20px; border-radius: 10px; cursor: pointer; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+    .nav-item.active { background: #8b5cf6; color: white; } /* Warna Ungu Sidebar */
+    .nav-item:hover:not(.active) { background: #f1f5f9; }
+
+    /* KONTEN KANAN */
+    .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+    
+    /* HEADER ATAS */
+    .topbar { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+    .topbar-date { color: #94a3b8; font-size: 0.9rem; }
+    .user-profile { display: flex; align-items: center; gap: 15px; }
+    .user-info { text-align: right; line-height: 1.2; }
+    .user-name { font-weight: bold; color: #333; margin: 0; }
+    .user-role { font-size: 0.8rem; color: #94a3b8; margin: 0; }
+    .avatar { width: 40px; height: 40px; background: #2dd4bf; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; }
+    .btn-logout { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; margin-left: 10px;}
+
+    /* AREA MATERI */
+    .content-area { padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    
+    /* BANNER BESAR */
+    .hero-banner { background: #64748b; border-radius: 20px; padding: 50px 40px; color: white; margin-bottom: 40px; box-shadow: 0 10px 15px -3px rgba(100,116,139,0.3); }
+    .hero-banner h2 { margin: 0 0 10px 0; font-size: 2.5rem; font-weight: 500; }
+    .hero-banner p { margin: 0; opacity: 0.8; }
+
+    /* GRID KARTU MATERI */
+    .section-title { font-size: 1.2rem; margin-bottom: 20px; color: #333; display: flex; align-items: center; gap: 10px; }
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+    
+    .course-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; transition: transform 0.2s; }
+    .course-card:hover { transform: translateY(-5px); }
+    .course-thumb { width: 100%; height: 180px; object-fit: cover; background-color: #e2e8f0; }
+    .course-info { padding: 20px; display: flex; flex-direction: column; flex: 1; }
+    .course-category { font-size: 0.75rem; color: #ef4444; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+    .course-title { font-size: 1.1rem; margin: 0 0 10px 0; color: #1e293b; line-height: 1.4; }
+    .course-desc { font-size: 0.85rem; color: #64748b; margin: 0 0 20px 0; flex: 1; }
+    
+    .btn-gabung { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; cursor: pointer; align-self: flex-start; display: flex; align-items: center; gap: 5px; }
+    .btn-gabung:hover { background: #dc2626; }
+    .btn-gabung.selesai { background: #10b981; }
+
+    /* Tab Filter Kategori (Di atas Grid) */
+    .filter-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .filter-btn { background: white; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; color: #64748b; }
+    .filter-btn.active { background: #f1f5f9; color: #8b5cf6; border-color: #8b5cf6; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <section id="auth-section">
+    <h2 class="auth-title">Masuk ke Akademi</h2>
+    <form id="auth-form">
+      <div class="input-group">
+        <input type="text" id="username" placeholder="Username (misal: anshar)" required />
+        <input type="password" id="password" placeholder="Password (minimal 6 karakter)" required />
+      </div>
+      <button type="submit" id="login-btn" class="btn-auth">Masuk</button>
+      <button type="button" id="register-btn" class="btn-auth outline">Daftar Akun Baru</button>
+    </form>
+    <p id="auth-message" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          Akademi Fiqhgram<br>
+          <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">Pusat Belajar Fikih Islam</span>
+        </div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active">⊞ Beranda</li>
+        <li class="nav-item">📚 Kelas Saya</li>
+        <li class="nav-item">💳 Transaksi</li>
+        <li class="nav-item">💬 Bantuan</li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      
+      <header class="topbar">
+        <div class="topbar-date" id="current-date">Rabu, 11 Maret 2026</div>
+        <div class="user-profile">
+          <div class="user-info">
+            <p class="user-name" id="display-name">Anshar</p>
+            <p class="user-role">Peserta</p>
           </div>
-          <button type="button" id="register-btn">Daftar</button>
-          <button type="submit" id="login-btn">Masuk</button>
-        </form>
-        <p id="auth-message" style="margin-top: 10px; font-weight: bold;"></p>
-      </section>
+          <div class="avatar" id="avatar-initial">A</div>
+          <button id="logout-btn" class="btn-logout">Keluar</button>
+        </div>
+      </header>
 
-      <section id="dashboard" class="hidden">
-        <div class="card topbar">
-          <h2 id="welcome"></h2>
-          <button id="logout-btn" class="secondary">Keluar</button>
+      <div class="content-area">
+        
+        <div class="hero-banner">
+          <h2>Layanan Customer Service Telegram</h2>
+          <p>t.me/akademifiqhgram</p>
         </div>
 
-        <section class="card">
-          <h3>Materi Pembelajaran</h3>
-          <p class="muted">Pilih kategori di bawah ini untuk memfilter materi.</p>
-          
-          <div class="category-tabs" id="category-tabs">
-            <button class="tab-btn active" data-category="Semua">Semua Materi</button>
-            <button class="tab-btn" data-category="Bahasa Arab">Bahasa Arab</button>
-            <button class="tab-btn" data-category="Fikih">Fikih</button>
-            <button class="tab-btn" data-category="Ushul Fikih">Ushul Fikih</button>
+        <h3 class="section-title">✨ Kelas Terbaru</h3>
+        
+        <div class="filter-tabs" id="category-tabs">
+          <button class="filter-btn active" data-category="Semua">Semua</button>
+          <button class="filter-btn" data-category="Bahasa Arab">Bahasa Arab</button>
+          <button class="filter-btn" data-category="Fikih">Fikih</button>
+          <button class="filter-btn" data-category="Ushul Fikih">Ushul Fikih</button>
+        </div>
+
+        <div id="course-list" class="course-grid">
           </div>
 
-          <div id="course-list" class="course-list"></div>
-        </section>
-      </section>
+      </div>
     </main>
+  </section>
 
-    <template id="course-template">
-      <article class="course-item">
-        <h4 class="course-title" style="margin:0 0 5px 0; font-size:1.2rem;"></h4>
-        <p class="course-description" style="margin:0 0 15px 0;"></p>
-        <div class="video-wrap">
-          <iframe class="course-video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <template id="course-template">
+    <div class="course-card">
+      <img class="course-thumb" src="" alt="Sampul Kelas">
+      <div class="course-info">
+        <div>
+          <div class="course-category">KATEGORI</div>
+          <h4 class="course-title">Judul Kitab</h4>
+          <p class="course-desc">Deskripsi singkat mengenai pelajaran ini.</p>
         </div>
-        <button class="complete-btn">Tandai Selesai</button>
-      </article>
-    </template>
+        <button class="btn-gabung">Gabung Sekarang →</button>
+      </div>
+    </div>
+  </template>
 
-    <script type="module" src="app.js"></script>
-  </body>
+  <script type="module" src="app.js"></script>
+</body>
 </html>
