@@ -4,12 +4,14 @@ import { getFirestore, collection, getDocs, setDoc, doc, getDoc } from 'https://
 
 // KONFIGURASI FIREBASE (Ganti dengan milikmu nanti jika ingin database sungguhan)
 const firebaseConfig = {
-  apiKey: 'YOUR_FIREBASE_API_KEY',
-  authDomain: 'YOUR_FIREBASE_AUTH_DOMAIN',
-  projectId: 'YOUR_FIREBASE_PROJECT_ID',
-  storageBucket: 'YOUR_FIREBASE_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_FIREBASE_MESSAGING_SENDER_ID',
-  appId: 'YOUR_FIREBASE_APP_ID',
+  apiKey: "AIzaSyBKgoWQfbyIgA8BLa67MdD0eXbzTsvC-bM",
+  authDomain: "pembelajaran-islam.firebaseapp.com",
+  databaseURL: "https://pembelajaran-islam-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "pembelajaran-islam",
+  storageBucket: "pembelajaran-islam.firebasestorage.app",
+  messagingSenderId: "571685080002",
+  appId: "1:571685080002:web:3a22b6a7af911fef5a245b",
+  measurementId: "G-0KVTX61PC3"
 };
 
 // Data Materi Pembelajaran
